@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import BotCollection from './components/BotCollection';
+import BotArmy from './components/BotArmy';
 
-function App() {
+
+export default function App() {
+  const botsAPI = 'https://bots-taupe.vercel.app/bots'
+  const [bots, setBots] = useState([]);
+
+
+
+  useEffect(() => {
+    fetch(botsAPI)
+    .then(res => res.json())
+    .then(setBots)
+  }, []);
+
+  function enlistBot(id) {
+    setBots(bots.map(bot => id === bot.id ? {...bot, isEnlisted: true} : bot));
+  }
+  
+
+  function delistBot(id) {
+    setBots(bots.map(bot => id === bot.id ? {...bot, isEnlisted: false} : bot));
+  }
+  
+  function dischargeBot(id) {
+    setBots(bots.filter(bot => bot.id === id ? false : true));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      
+      <BotArmy bots={bots.filter(bot => bot.isEnlisted)} handleDischarge={dischargeBot} handleClick={delistBot} />
+      <BotCollection bots= {bots}  handleDischarge={dischargeBot} handleClick={enlistBot}/>
+     
     </div>
   );
 }
-
-export default App;
